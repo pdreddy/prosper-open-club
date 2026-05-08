@@ -1,0 +1,37 @@
+{
+  "name": "prosper-racquet-league-platform",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "backend",
+    "mobile",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:backend dev:mobile",
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:mobile": "npm --workspace mobile run dev",
+    "build": "npm run build:shared && npm run build:backend",
+    "build:shared": "npm --workspace shared run build",
+    "build:backend": "npm --workspace backend run build",
+    "start": "npm --workspace backend run start",
+    "lint": "npm-run-all --parallel lint:backend lint:mobile lint:shared",
+    "lint:backend": "npm --workspace backend run lint",
+    "lint:mobile": "npm --workspace mobile run lint",
+    "lint:shared": "npm --workspace shared run lint",
+    "format": "prettier --write .",
+    "typecheck": "npm-run-all --parallel typecheck:backend typecheck:mobile typecheck:shared",
+    "typecheck:backend": "npm --workspace backend run typecheck",
+    "typecheck:mobile": "npm --workspace mobile run typecheck",
+    "typecheck:shared": "npm --workspace shared run typecheck"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  }
+}
