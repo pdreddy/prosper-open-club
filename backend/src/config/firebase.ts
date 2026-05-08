@@ -1,25 +1,45 @@
 import { App, cert, getApps, initializeApp } from 'firebase-admin/app';
+import { Auth, getAuth } from 'firebase-admin/auth';
+import { Firestore, getFirestore } from 'firebase-admin/firestore';
 import { env } from './env';
 
-let firebaseApp: App | null = null;
+interface FirebaseServices {
+  app: App;
+  auth: Auth;
+  firestore: Firestore;
+}
 
-export const getFirebaseApp = (): App => {
-  if (firebaseApp) {
-    return firebaseApp;
-  }
+let firebaseServices: FirebaseServices | null = null;
 
+const createFirebaseApp = (): App => {
   if (getApps().length > 0) {
-    firebaseApp = getApps()[0] as App;
-    return firebaseApp;
+    return getApps()[0] as App;
   }
 
-  firebaseApp = initializeApp({
+  return initializeApp({
     credential: cert({
       projectId: env.FIREBASE_PROJECT_ID,
       clientEmail: env.FIREBASE_CLIENT_EMAIL,
       privateKey: env.FIREBASE_PRIVATE_KEY,
     }),
   });
-
-  return firebaseApp;
 };
+
+export const getFirebaseServices = (): FirebaseServices => {
+  if (firebaseServices) {
+    return firebaseServices;
+  }
+
+  const app = createFirebaseApp();
+  firebaseServices = {
+    app,
+    auth: getAuth(app),
+    firestore: getFirestore(app),
+  };
+
+  return firebaseServices;
+};
+
+export const getFirebaseApp = (): App => getFirebaseServices().app;
+export const getFirebaseAuth = (): Auth => getFirebaseServices().auth;
+export const getFirestoreDb = (): Firestore => getFirebaseServices().firestore;
