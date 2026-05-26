@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { HealthScreen } from './src/features/health/screens/HealthScreen';
 import { getFirebaseClientApp } from './src/config/firebase';
 
-export default function App(): JSX.Element {
+export default function App() {
   useEffect(() => {
     getFirebaseClientApp();
   }, []);
