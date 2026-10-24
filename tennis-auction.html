@@ -1,0 +1,42 @@
+<!-- Fixed tie rebid logic: tied teams must bid higher than current tied amount -->
+<script>
+function validateBid(teamId, bidAmount) {
+  const amount = parseInt(bidAmount) || 0;
+  const team = teams.find(t => t.id === teamId);
+
+  if (hasTeamAcquiredFromPool(team, currentPoolUTR)) {
+    return `Team already has a player from UTR ${currentPoolUTR} pool`;
+  }
+
+  const { winners, highestBid } = getWinningBids();
+  const isTieRound = winners.length > 1;
+  const teamIsTied = winners.some(w => w.teamId === teamId);
+
+  // In tie-break round, tied teams must increase above the tied price.
+  if (isTieRound && teamIsTied && amount <= highestBid) {
+    return `Tie-break bid must be greater than ${highestBid.toLocaleString()}`;
+  }
+
+  if (amount < currentPlayer.price) {
+    return `Minimum bid is ${currentPlayer.price.toLocaleString()}`;
+  }
+
+  if ((amount - currentPlayer.price) % 1000 !== 0) {
+    return `Bid must be in exact $1,000 increments from base price (e.g., ${currentPlayer.price.toLocaleString()}, ${(currentPlayer.price + 1000).toLocaleString()}, ${(currentPlayer.price + 2000).toLocaleString()})`;
+  }
+
+  if (amount > team.budget) {
+    return `Cannot exceed budget of ${team.budget.toLocaleString()}`;
+  }
+
+  return null;
+}
+
+// In the button `disabled` condition add this extra constraint:
+// || (winners.length > 1 && winners.some(w => w.teamId === team.id) && parseInt(inputValue) <= highestBid)
+
+// In placeholder add tie-break hint for tied teams:
+// const tieHint = winners.length > 1 && winners.some(w => w.teamId === team.id)
+//   ? `Tie-break: > ${highestBid.toLocaleString()}`
+//   : `Min: ${currentPlayer.price.toLocaleString()} (Max: ${team.budget.toLocaleString()}, +$1K)`;
+</script>
